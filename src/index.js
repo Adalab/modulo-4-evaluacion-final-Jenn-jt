@@ -127,11 +127,21 @@ server.put('/recetas/:id', async (req, res) => {
 
 server.delete('/recetas/:id', async (req, res) => {
   const idRecipe = req.params.id;
+  const conn = await getConnection();
+  const select = 'SELECT * FROM recetas WHERE id = ?';
+  const [recetaSel] = await conn.query(select, idRecipe);
+
   try {
+    if (recetaSel.length === 0) {
+      return res.json({
+        success: false,
+        message: 'Receta no encontrada',
+      });
+    }
     const sql = 'DELETE FROM recetas WHERE id = ?';
-    const conn = await getConnection();
     const [results] = await conn.query(sql, idRecipe);
     conn.end();
+
     res.json({
       success: true,
       id: idRecipe,
@@ -139,7 +149,7 @@ server.delete('/recetas/:id', async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: 'Error receta no encontrada',
+      message: 'Error',
     });
   }
 });
