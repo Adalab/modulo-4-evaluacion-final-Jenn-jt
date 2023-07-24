@@ -44,9 +44,9 @@ server.listen(port, () => {
 
 // Endpoints
 
-// GET /api/items
+// GET/recetas, mostrar toda la tabla
 
-server.get('/api/recetas', async (req, res) => {
+server.get('/recetas', async (req, res) => {
   const select = 'SELECT * FROM recetas';
   const conn = await getConnection();
   const [results] = await conn.query(select);
@@ -56,15 +56,21 @@ server.get('/api/recetas', async (req, res) => {
     results: results,
   });
 });
-server.get('/api/recetas/:id', async (req, res) => {
+
+// GET/recetas/:id busca la receta por id
+
+server.get('/recetas/:id', async (req, res) => {
   const idRecipe = req.params.id;
-  const select = 'SELECT * FROM recetas WHERE id = ?';
+  const select = 'Select * from recetas where id = ?';
   const conn = await getConnection();
   const [results] = await conn.query(select, idRecipe);
   res.json(results[0]);
 });
 
-server.post('/api/recetas', async (req, res) => {
+//añadir nueva receta
+
+server.post('/recetas', async (req, res) => {
+  console.log('HOLIS');
   const newRecipe = req.body;
   try {
     const insert =
@@ -85,11 +91,14 @@ server.post('/api/recetas', async (req, res) => {
     console.log(error);
     res.json({
       success: false,
-      message: 'No se ha podido añadir la receta',
+      message: 'error no se ha podido añadir la receta',
     });
   }
 });
-server.put('/api/recetas/:id', async (req, res) => {
+
+//actualizar receta
+
+server.put('/recetas/:id', async (req, res) => {
   const idRecipe = req.params.id;
   const { nombre, ingredientes, instrucciones } = req.body;
   try {
@@ -109,11 +118,14 @@ server.put('/api/recetas/:id', async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: error,
+      message: 'Error al actualizar la receta',
     });
   }
 });
-server.delete('/api/recetas/:id', async (req, res) => {
+
+//Eliminar receta
+
+server.delete('/recetas/:id', async (req, res) => {
   const idRecipe = req.params.id;
   try {
     const sql = 'DELETE FROM recetas WHERE id = ?';
@@ -127,7 +139,7 @@ server.delete('/api/recetas/:id', async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: 'Ha ocurrido un error',
+      message: 'Error receta no encontrada',
     });
   }
 });
